@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 export function DashboardLayout() {
   return (
@@ -14,10 +14,61 @@ export function DashboardLayout() {
           <aside className="min-h-[calc(100vh-4rem)] w-64 border-r bg-white p-4">
             <nav>
               <ul className="space-y-2">
-                <li>Dashboard</li>
-                <li>Produtos</li>
-                <li>Clíentes</li>
-                <li>Configurações</li>
+                <li>
+                  <NavLink
+                    to="/"
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 ${isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"}`
+                    }
+                  >
+                    Dashboard
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/products"
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 ${
+                        isActive
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`
+                    }
+                  >
+                    Produtos
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/customers"
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 ${
+                        isActive
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`
+                    }
+                  >
+                    Clientes
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 ${
+                        isActive
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`
+                    }
+                  >
+                    Configurações
+                  </NavLink>
+                </li>
               </ul>
             </nav>
           </aside>
