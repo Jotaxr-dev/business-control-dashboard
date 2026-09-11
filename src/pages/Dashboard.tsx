@@ -4,6 +4,7 @@ interface Metric {
   title: string;
   value: string;
   description: string;
+  variation: number;
 }
 
 const metrics: Metric[] = [
@@ -11,16 +12,19 @@ const metrics: Metric[] = [
     title: "Clientes",
     value: "1.248",
     description: "+12% em relação ao mês passado",
+    variation: 12,
   },
   {
     title: "Produtos",
     value: "356",
     description: "24 produtos adicionados este mês",
+    variation: 8,
   },
   {
     title: "Vendas",
     value: "R$ 24.580",
     description: "+18% em relação ao mês passado",
+    variation: 18,
   },
 ];
 
@@ -41,6 +45,7 @@ export function Dashboard() {
               title={metric.title}
               value={metric.value}
               description={metric.description}
+              variation={metric.variation}
             />
           ))}
         </div>
