@@ -1,5 +1,6 @@
 import { MetricCard } from "../components/MetricCard";
 import { SalesChart } from "../components/SalesChart";
+import { RecentActivities } from "../components/RecentActivities";
 
 interface Metric {
   title: string;
@@ -53,6 +54,10 @@ export function Dashboard() {
 
         <div className="mt-6">
           <SalesChart />
+        </div>
+
+        <div className="mt-6">
+          <RecentActivities />
         </div>
       </div>
     </>
