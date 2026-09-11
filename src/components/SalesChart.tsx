@@ -7,15 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-const data = [
-  { month: "Jan", sales: 12000 },
-  { month: "Fev", sales: 15000 },
-  { month: "Mar", sales: 13500 },
-  { month: "Abr", sales: 18000 },
-  { month: "Mai", sales: 21000 },
-  { month: "Jun", sales: 24580 },
-];
+import { salesData } from "../data/dashboard";
 
 export function SalesChart() {
   return (
@@ -31,7 +23,7 @@ export function SalesChart() {
 
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={salesData}>
               <CartesianGrid strokeDasharray="3 3" />
 
               <XAxis dataKey="month" />
