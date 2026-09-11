@@ -1,4 +1,5 @@
 import { MetricCard } from "../components/MetricCard";
+import { SalesChart } from "../components/SalesChart";
 
 interface Metric {
   title: string;
@@ -48,6 +49,10 @@ export function Dashboard() {
               variation={metric.variation}
             />
           ))}
+        </div>
+
+        <div className="mt-6">
+          <SalesChart />
         </div>
       </div>
     </>
