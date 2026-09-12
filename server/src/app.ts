@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { userRoutes } from "./modules/users/user.routes.js";
 
 const app = express();
 
@@ -12,5 +13,7 @@ app.get("/api/health", (_req, res) => {
     message: "Business Control API is running",
   });
 });
+
+app.use("/api/users", userRoutes);
 
 export { app };
