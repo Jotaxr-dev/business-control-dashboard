@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { AppError } from "../errors/AppError";
 
 function isPrismaKnownError(error: unknown): error is { code: string } {
   return (
@@ -29,6 +30,12 @@ export function errorMiddleware(
   if (isPrismaKnownError(error) && error.code === "P2002") {
     return res.status(409).json({
       message: "E-mail já cadastrado",
+    });
+  }
+
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({
+      message: error.message,
     });
   }
 
