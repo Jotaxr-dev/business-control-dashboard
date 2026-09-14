@@ -29,3 +29,13 @@ export async function getProducts() {
 
   return products;
 }
+
+export async function getProductById(id: number) {
+  const product = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return product;
+}
