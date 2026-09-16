@@ -39,3 +39,22 @@ export async function getProductById(id: number) {
 
   return product;
 }
+
+export async function updateProduct(
+  id: number,
+  data: {
+    name?: string;
+    description?: string;
+    price?: number;
+    stock?: number;
+  },
+) {
+  const product = await prisma.product.update({
+    where: {
+      id,
+    },
+    data,
+  });
+
+  return product;
+}

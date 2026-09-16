@@ -12,3 +12,5 @@ export const createProductSchema = z.object({
     .int("Estoque deve ser um número inteiro")
     .min(0, "Estoque não pod ser negativo"),
 });
+
+export const updateProductSchema = createProductSchema.partial();

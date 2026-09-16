@@ -33,6 +33,12 @@ export function errorMiddleware(
     });
   }
 
+  if (isPrismaKnownError(error) && error.code === "P2025") {
+    return res.status(404).json({
+      message: "Produto não encontrado",
+    });
+  }
+
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
       message: error.message,

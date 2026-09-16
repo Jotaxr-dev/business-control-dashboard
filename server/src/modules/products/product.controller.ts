@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { createProductSchema } from "./product.schema.js";
+import { createProductSchema, updateProductSchema } from "./product.schema.js";
 import {
   createProduct,
   getProducts,
   getProductById,
+  updateProduct,
 } from "./product.service.js";
 
 export async function createProductController(req: Request, res: Response) {
@@ -32,4 +33,14 @@ export async function getProductByIdController(req: Request, res: Response) {
   }
 
   return res.status(200).json(product);
+}
+
+export async function updateProductController(req: Request, res: Response) {
+  const id = Number(req.params.id);
+
+  const data = updateProductSchema.parse(req.body);
+
+  const product = await updateProduct(id, data)
+
+  return res.status(200).json(product)
 }
