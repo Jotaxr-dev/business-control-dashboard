@@ -5,6 +5,7 @@ import {
   getProducts,
   getProductById,
   updateProduct,
+  deleteProduct,
 } from "./product.service.js";
 
 export async function createProductController(req: Request, res: Response) {
@@ -40,7 +41,15 @@ export async function updateProductController(req: Request, res: Response) {
 
   const data = updateProductSchema.parse(req.body);
 
-  const product = await updateProduct(id, data)
+  const product = await updateProduct(id, data);
 
-  return res.status(200).json(product)
+  return res.status(200).json(product);
+}
+
+export async function deleteProductController(req: Request, res: Response) {
+  const id = Number(req.params.id);
+
+  await deleteProduct(id);
+
+  return res.status(204).send();
 }

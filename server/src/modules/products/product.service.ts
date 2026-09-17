@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { prisma } from "../../lib/prisma.js";
 
 interface CreateProductData {
@@ -54,6 +55,16 @@ export async function updateProduct(
       id,
     },
     data,
+  });
+
+  return product;
+}
+
+export async function deleteProduct(id: number) {
+  const product = await prisma.product.delete({
+    where: {
+      id,
+    },
   });
 
   return product;
