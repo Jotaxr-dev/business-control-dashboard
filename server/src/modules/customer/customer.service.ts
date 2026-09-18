@@ -1,0 +1,29 @@
+import { prisma } from "../../lib/prisma.js";
+
+interface CreateCustomerData {
+  name: string;
+  email: string;
+  phone?: string;
+}
+
+export async function createCustomer(data: CreateCustomerData) {
+  const customer = await prisma.customer.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+    },
+  });
+
+  return customer;
+}
+
+export async function getCustomers() {
+  const customers = await prisma.customer.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return customers;
+}
