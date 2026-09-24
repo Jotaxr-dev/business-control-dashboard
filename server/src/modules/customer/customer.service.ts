@@ -27,3 +27,13 @@ export async function getCustomers() {
 
   return customers;
 }
+
+export async function getCustomerById(id: number) {
+  const customer = await prisma.customer.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return customer;
+}
