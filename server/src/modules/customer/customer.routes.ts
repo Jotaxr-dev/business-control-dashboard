@@ -5,6 +5,7 @@ import {
   getCustomersController,
   getCustomerByIdController,
   updateCustomerController,
+  deleteCustomerController,
 } from "./customer.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 
@@ -14,5 +15,6 @@ customerRoutes.post("/", authMiddleware, createCustomerController);
 customerRoutes.get("/", authMiddleware, getCustomersController);
 customerRoutes.get("/:id", authMiddleware, getCustomerByIdController);
 customerRoutes.patch("/:id", authMiddleware, updateCustomerController);
+customerRoutes.delete("/:id", authMiddleware, deleteCustomerController);
 
 export { customerRoutes };

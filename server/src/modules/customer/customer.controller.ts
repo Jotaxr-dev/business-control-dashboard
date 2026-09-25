@@ -6,6 +6,7 @@ import {
   getCustomers,
   getCustomerById,
   updateCustomer,
+  deleteCustomer,
 } from "./customer.service.js";
 
 export async function createCustomerController(req: Request, res: Response) {
@@ -42,4 +43,16 @@ export async function updateCustomerController(req: Request, res: Response) {
   const customer = await updateCustomer(id, data);
 
   return res.status(200).json(customer);
+}
+
+export async function deleteCustomerController(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  const customer = await deleteCustomer(id);
+
+  if (!customer) {
+    return res.status(404).json({
+      message: "Cliente não encontrado",
+    });
+  }
+  return res.status(204).send();
 }

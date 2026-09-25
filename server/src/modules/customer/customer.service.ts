@@ -53,3 +53,19 @@ export async function updateCustomer(
 
   return customer;
 }
+
+export async function deleteCustomer(id: number) {
+  const customer = await prisma.customer.findUnique({
+    where: { id },
+  });
+
+  if (!customer) {
+    return null;
+  }
+
+  await prisma.customer.delete({
+    where: { id },
+  });
+
+  return customer;
+}
