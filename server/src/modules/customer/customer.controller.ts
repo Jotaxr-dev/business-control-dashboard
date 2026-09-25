@@ -17,8 +17,16 @@ export async function createCustomerController(req: Request, res: Response) {
   return res.status(201).json(customer);
 }
 
-export async function getCustomersController(_req: Request, res: Response) {
-  const customers = await getCustomers();
+export async function getCustomersController(req: Request, res: Response) {
+  const search = req.query.search;
+
+  if (search !== undefined && typeof search !== "string") {
+    return res.status(400).json({
+      message: "Parâmetro search inválido",
+    });
+  }
+
+  const customers = await getCustomers(search);
 
   return res.status(200).json(customers);
 }

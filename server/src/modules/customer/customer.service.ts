@@ -18,8 +18,26 @@ export async function createCustomer(data: CreateCustomerData) {
   return customer;
 }
 
-export async function getCustomers() {
+export async function getCustomers(search?: string) {
   const customers = await prisma.customer.findMany({
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : undefined,
     orderBy: {
       createdAt: "desc",
     },
