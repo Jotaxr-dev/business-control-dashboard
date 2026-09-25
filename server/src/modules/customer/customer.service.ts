@@ -37,3 +37,19 @@ export async function getCustomerById(id: number) {
 
   return customer;
 }
+
+export async function updateCustomer(
+  id: number,
+  data: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  },
+) {
+  const customer = await prisma.customer.update({
+    where: { id },
+    data,
+  });
+
+  return customer;
+}

@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 
-import { createCustomerSchema } from "./customer.schema";
+import { createCustomerSchema, updateCustomerSchema } from "./customer.schema";
 import {
   createCustomer,
   getCustomers,
   getCustomerById,
+  updateCustomer,
 } from "./customer.service.js";
 
 export async function createCustomerController(req: Request, res: Response) {
@@ -30,6 +31,15 @@ export async function getCustomerByIdController(req: Request, res: Response) {
       message: "Cliente não encontrado",
     });
   }
+
+  return res.status(200).json(customer);
+}
+
+export async function updateCustomerController(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  const data = updateCustomerSchema.parse(req.body);
+
+  const customer = await updateCustomer(id, data);
 
   return res.status(200).json(customer);
 }
