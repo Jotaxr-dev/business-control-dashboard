@@ -25,32 +25,49 @@ export async function getCustomers(
   search?: string,
   sortBy: CustomerSortBy = "createdAt",
   order: SortOrder = "desc",
+  page = 1,
+  limit = 10,
 ) {
-  const customers = await prisma.customer.findMany({
-    where: search
-      ? {
-          OR: [
-            {
-              name: {
-                contains: search,
-                mode: "insensitive",
-              },
+  const where = search
+    ? {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: "insensitive" as const,
             },
-            {
-              email: {
-                contains: search,
-                mode: "insensitive",
-              },
+          },
+          {
+            email: {
+              contains: search,
+              mode: "insensitive" as const,
             },
-          ],
-        }
-      : undefined,
-    orderBy: {
-      [sortBy]: order,
-    },
-  });
+          },
+        ],
+      }
+    : undefined;
 
-  return customers;
+  const [customers, total] = await Promise.all([
+    prisma.customer.findMany({
+      where,
+      orderBy: {
+        [sortBy]: order,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.customer.count({ where }),
+  ]);
+
+  return {
+    customers,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 export async function getCustomerById(id: number) {

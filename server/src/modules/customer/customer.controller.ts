@@ -18,12 +18,14 @@ export async function createCustomerController(req: Request, res: Response) {
 }
 
 export async function getCustomersController(req: Request, res: Response) {
-  const { search, sortBy, order } = req.query;
+  const { search, sortBy, order, page, limit } = req.query;
 
   if (
     (search !== undefined && typeof search !== "string") ||
     (sortBy !== undefined && typeof sortBy !== "string") ||
-    (order !== undefined && typeof order !== "string")
+    (order !== undefined && typeof order !== "string") ||
+    (page !== undefined && typeof page !== "string") ||
+    (limit !== undefined && typeof limit !== "string")
   ) {
     return res.status(400).json({
       message: "Parâmetros de consulta inválidos",
@@ -45,13 +47,30 @@ export async function getCustomersController(req: Request, res: Response) {
     });
   }
 
-  const customers = await getCustomers(
+  const pageNumber = page === undefined ? 1 : Number(page);
+  const pageLimit = limit === undefined ? 10 : Number(limit);
+
+  if (
+    !Number.isInteger(pageNumber) ||
+    pageNumber < 1 ||
+    !Number.isInteger(pageLimit) ||
+    pageLimit < 1 ||
+    pageLimit > 100
+  ) {
+    return res.status(400).json({
+      message: "page deve ser inteiro >= 1 e limit deve ser de 1 a 100",
+    });
+  }
+
+  const result = await getCustomers(
     search,
     sortBy as "name" | "createdAt" | undefined,
     order as "asc" | "desc" | undefined,
+    pageNumber,
+    pageLimit,
   );
 
-  return res.status(200).json(customers);
+  return res.status(200).json(result);
 }
 export async function getCustomerByIdController(req: Request, res: Response) {
   const id = Number(req.params.id);
