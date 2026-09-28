@@ -18,15 +18,38 @@ export async function createCustomerController(req: Request, res: Response) {
 }
 
 export async function getCustomersController(req: Request, res: Response) {
-  const search = req.query.search;
+  const { search, sortBy, order } = req.query;
 
-  if (search !== undefined && typeof search !== "string") {
+  if (
+    (search !== undefined && typeof search !== "string") ||
+    (sortBy !== undefined && typeof sortBy !== "string") ||
+    (order !== undefined && typeof order !== "string")
+  ) {
     return res.status(400).json({
-      message: "Parâmetro search inválido",
+      message: "Parâmetros de consulta inválidos",
     });
   }
 
-  const customers = await getCustomers(search);
+  const allowedSortFields = ["name", "createdAt"];
+  const allowedOrders = ["asc", "desc"];
+
+  if (sortBy !== undefined && !allowedSortFields.includes(sortBy)) {
+    return res.status(400).json({
+      message: "sortBy deve ser name ou createdAt",
+    });
+  }
+
+  if (order !== undefined && !allowedOrders.includes(order)) {
+    return res.status(400).json({
+      message: "order deve ser asc ou desc",
+    });
+  }
+
+  const customers = await getCustomers(
+    search,
+    sortBy as "name" | "createdAt" | undefined,
+    order as "asc" | "desc" | undefined,
+  );
 
   return res.status(200).json(customers);
 }

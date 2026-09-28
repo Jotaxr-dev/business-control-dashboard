@@ -6,6 +6,9 @@ interface CreateCustomerData {
   phone?: string;
 }
 
+type CustomerSortBy = "name" | "createdAt";
+type SortOrder = "asc" | "desc";
+
 export async function createCustomer(data: CreateCustomerData) {
   const customer = await prisma.customer.create({
     data: {
@@ -18,7 +21,11 @@ export async function createCustomer(data: CreateCustomerData) {
   return customer;
 }
 
-export async function getCustomers(search?: string) {
+export async function getCustomers(
+  search?: string,
+  sortBy: CustomerSortBy = "createdAt",
+  order: SortOrder = "desc",
+) {
   const customers = await prisma.customer.findMany({
     where: search
       ? {
@@ -39,7 +46,7 @@ export async function getCustomers(search?: string) {
         }
       : undefined,
     orderBy: {
-      createdAt: "desc",
+      [sortBy]: order,
     },
   });
 
