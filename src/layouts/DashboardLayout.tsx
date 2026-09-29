@@ -73,6 +73,27 @@ export function DashboardLayout() {
           </div>
         </header>
 
+        <nav className="flex gap-2 overflow-x-auto border-b bg-background px-4 py-3 md:hidden">
+          {navigation.map(({ name, to, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                [
+                  "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                ].join(" ")
+              }
+            >
+              <Icon className="size-4" />
+              {name}
+            </NavLink>
+          ))}
+        </nav>
+
         <main className="p-4 md:p-8">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
