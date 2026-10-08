@@ -7,27 +7,54 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { salesData } from "../data/dashboard";
 
 export function SalesChart() {
   return (
-    <>
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Vendas</h2>
+    <Card>
+      <CardHeader>
+        <CardTitle>Vendas</CardTitle>
+        <CardDescription>Evolução das vendas nos últimos meses</CardDescription>
+      </CardHeader>
 
-          <p className="text-sm text-gray-500">
-            Evolução das vendas nos últimos meses
-          </p>
-        </div>
-
+      <CardContent>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={salesData}>
-              <CartesianGrid strokeDasharray="3 3" />
+            <LineChart
+              data={salesData}
+              margin={{
+                top: 10,
+                right: 10,
+                left: 0,
+                bottom: 0,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
 
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis
+                dataKey="month"
+                className="text-xs"
+                tickLine={false}
+                axisLine={false}
+              />
+
+              <YAxis
+                className="text-xs"
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) =>
+                  `R$ ${Number(value).toLocaleString("pt-BR")}`
+                }
+              />
 
               <Tooltip
                 formatter={(value) =>
@@ -40,12 +67,13 @@ export function SalesChart() {
                 dataKey="sales"
                 stroke="currentColor"
                 strokeWidth={2}
-                dot
+                dot={false}
+                className="text-primary"
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
-    </>
+      </CardContent>
+    </Card>
   );
 }
