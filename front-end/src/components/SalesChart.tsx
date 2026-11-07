@@ -1,3 +1,4 @@
+
 import {
   CartesianGrid,
   Line,
@@ -18,21 +19,46 @@ import {
 
 import { salesData } from "../data/dashboard";
 
-const currentSales = salesData[salesData.length - 1]?.sales ?? 0;
-
-const formattedCurrentSales = currentSales.toLocaleString("pt-BR", {
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
   maximumFractionDigits: 0,
 });
 
+const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+const currentSales = salesData[salesData.length - 1]?.sales ?? 0;
+const previousSales =
+  salesData.length > 1
+    ? salesData[salesData.length - 2].sales
+    : null;
+
+const variation =
+  previousSales !== null && previousSales !== 0
+    ? ((currentSales - previousSales) / Math.abs(previousSales)) * 100
+    : null;
+
+const formattedVariation =
+  variation === null
+    ? null
+    : `${variation > 0 ? "+" : ""}${variation.toLocaleString("pt-BR", {
+        maximumFractionDigits: 1,
+      })}%`;
+
 export function SalesChart() {
+  const isPositive = variation !== null && variation > 0;
+  const isNegative = variation !== null && variation < 0;
+
   return (
-    <Card className="border-border/60 bg-card text-card-foreground">
+    <Card className="border-border/60 bg-card text-card-foreground shadow-sm">
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <CardTitle className="text-foreground">Vendas</CardTitle>
-
           <CardDescription className="mt-1 text-muted-foreground">
             Evolução das vendas nos últimos meses
           </CardDescription>
@@ -40,21 +66,31 @@ export function SalesChart() {
 
         <div className="sm:text-right">
           <p className="text-2xl font-semibold tracking-tight text-foreground">
-            {formattedCurrentSales}
+            {currencyFormatter.format(currentSales)}
           </p>
 
-          <p className="mt-1 text-sm font-medium text-emerald-500">
-            +18% em relação ao mês passado
-          </p>
+          {formattedVariation !== null && (
+            <p
+              className={`mt-1 text-sm font-medium ${
+                isPositive
+                  ? "text-emerald-500"
+                  : isNegative
+                    ? "text-destructive"
+                    : "text-muted-foreground"
+              }`}
+            >
+              {formattedVariation} em relação ao mês anterior
+            </p>
+          )}
         </div>
       </CardHeader>
 
       <CardContent>
-        <div className="h-80 w-full">
+        <div className="h-72 w-full sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={salesData}
-              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+              margin={{ top: 12, right: 12, left: 4, bottom: 4 }}
             >
               <CartesianGrid
                 vertical={false}
@@ -67,39 +103,48 @@ export function SalesChart() {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                minTickGap={12}
+                tick={{
+                  fill: "var(--muted-foreground)",
+                  fontSize: 12,
+                }}
               />
 
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
-                width={75}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-                tickFormatter={(value) =>
-                  `R$ ${Number(value).toLocaleString("pt-BR")}`
+                tickMargin={8}
+                width={72}
+                tick={{
+                  fill: "var(--muted-foreground)",
+                  fontSize: 12,
+                }}
+                tickFormatter={(value: number) =>
+                  compactCurrencyFormatter.format(value)
                 }
               />
 
               <Tooltip
+                cursor={{
+                  stroke: "var(--border)",
+                  strokeDasharray: "4 4",
+                }}
                 contentStyle={{
                   backgroundColor: "var(--popover)",
                   border: "1px solid var(--border)",
                   borderRadius: "12px",
                   color: "var(--popover-foreground)",
+                  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.18)",
                 }}
                 labelStyle={{
                   color: "var(--popover-foreground)",
+                  marginBottom: 4,
                 }}
                 itemStyle={{
                   color: "var(--popover-foreground)",
                 }}
                 formatter={(value) => [
-                  Number(value).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                    maximumFractionDigits: 0,
-                  }),
+                  currencyFormatter.format(Number(value)),
                   "Vendas",
                 ]}
               />
@@ -107,8 +152,9 @@ export function SalesChart() {
               <Line
                 type="monotone"
                 dataKey="sales"
+                name="Vendas"
                 stroke="var(--primary)"
-                strokeWidth={3}
+                strokeWidth={2.5}
                 dot={false}
                 activeDot={{
                   r: 5,
@@ -116,6 +162,8 @@ export function SalesChart() {
                   stroke: "var(--background)",
                   strokeWidth: 2,
                 }}
+                isAnimationActive
+                animationDuration={700}
               />
             </LineChart>
           </ResponsiveContainer>
