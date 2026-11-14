@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+business_control_backup.dump
 
 # Editor directories and files
 .vscode/*

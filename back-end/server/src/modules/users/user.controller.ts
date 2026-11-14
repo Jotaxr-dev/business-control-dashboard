@@ -5,7 +5,7 @@ import { createUserSchema } from "./user.schema.js";
 export async function createUserController(req: Request, res: Response) {
   const data = createUserSchema.parse(req.body);
 
-  const user = await createUser(data.name, data.email, data.password);
+  const user = await createUser(data.name, data.email, data.password, data.companyName,);
 
   return res.status(201).json(user);
 }

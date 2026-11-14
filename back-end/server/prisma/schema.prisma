@@ -8,30 +8,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MEMBER
 }
+
+model Company {
+  id        Int        @id @default(autoincrement())
+  name      String
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+
+  users       User[]
+  products    Product[]
+  customers   Customer[]
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  companyId   Int     
+  name        String
+  email       String   @unique
+  password    String
+  role        UserRole @default(MEMBER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId])
+}
+
 
 model Product {
   id          Int      @id @default(autoincrement())
+  companyId   Int
   name        String
   description String?
-  price       Float
+  price       Decimal  @db.Decimal(12, 2)
   stock       Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId])
 }
+
 
 model Customer {
   id        Int      @id @default(autoincrement())
+  companyId Int
   name      String
-  email     String   @unique
+  email     String
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, email])
+  @@index([companyId])
 }

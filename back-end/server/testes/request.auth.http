@@ -1,0 +1,28 @@
+@baseUrl = http://127.0.0.1:3000
+
+### Health
+GET {{{baseUrl}}}/api/health
+
+### Cadastro passo 1 
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+    "name": "Jota",
+    "email": "jota@email.com",
+    "password": "123456",
+    "companyName": "Jota Store"
+}
+
+### Login passo 2
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "jota@email.com",
+    "password": "123456"
+}
+
+### me passo 3 
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{}}
