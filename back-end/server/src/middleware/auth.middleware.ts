@@ -2,8 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../errors/AppError.js";
 
+type UserRole = "OWNER" | "ADMIN" | "MEMBER";
+
 export interface AuthenticatedRequest extends Request {
   userId: number;
+  companyId: number;
+  role: UserRole;
+}
+
+function isValidRole(role: unknown): role is UserRole {
+  return role === "OWNER" || role === "ADMIN" || role === "MEMBER";
 }
 
 export function authMiddleware(
@@ -29,11 +37,25 @@ export function authMiddleware(
       process.env.JWT_SECRET as string,
     ) as jwt.JwtPayload;
 
-    if (!decoded.sub) {
+    const userId = Number(decoded.sub);
+    const companyId = decoded.companyId;
+    const role = decoded.role;
+
+    if (
+      !Number.isSafeInteger(userId) ||
+      userId <= 0 ||
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0 ||
+      !isValidRole(role)
+    ) {
       throw new AppError("Token inválido", 401);
     }
 
-    (req as AuthenticatedRequest).userId = Number(decoded.sub);
+    const authenticatedReq = req as AuthenticatedRequest;
+
+    authenticatedReq.userId = userId;
+    authenticatedReq.companyId = companyId;
+    authenticatedReq.role = role;
 
     next();
   } catch (error) {

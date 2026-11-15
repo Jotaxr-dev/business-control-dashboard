@@ -1,4 +1,3 @@
-import { number } from "zod";
 import { prisma } from "../../lib/prisma.js";
 
 interface CreateProductData {
@@ -8,41 +7,44 @@ interface CreateProductData {
   stock: number;
 }
 
-export async function createProduct(data: CreateProductData) {
-  const product = await prisma.product.create({
+export async function createProduct(
+  companyId: number,
+  data: CreateProductData,
+) {
+  return prisma.product.create({
     data: {
+      companyId,
       name: data.name,
       description: data.description,
       price: data.price,
       stock: data.stock,
     },
   });
-
-  return product;
 }
 
-export async function getProducts() {
-  const products = await prisma.product.findMany({
+export async function getProducts(companyId: number) {
+  return prisma.product.findMany({
+    where: {
+      companyId,
+    },
     orderBy: {
       createdAt: "desc",
     },
   });
-
-  return products;
 }
 
-export async function getProductById(id: number) {
-  const product = await prisma.product.findUnique({
+export async function getProductById(id: number, companyId: number) {
+  return prisma.product.findUnique({
     where: {
       id,
+      companyId,
     },
   });
-
-  return product;
 }
 
 export async function updateProduct(
   id: number,
+  companyId: number,
   data: {
     name?: string;
     description?: string;
@@ -50,22 +52,41 @@ export async function updateProduct(
     stock?: number;
   },
 ) {
-  const product = await prisma.product.update({
+  const result = await prisma.product.updateMany({
     where: {
       id,
+      companyId,
     },
     data,
   });
+  if (result.count === 0) {
+    return null;
+  }
 
-  return product;
-}
-
-export async function deleteProduct(id: number) {
-  const product = await prisma.product.delete({
+  return prisma.product.findFirst({
     where: {
       id,
+      companyId,
     },
   });
+}
 
+export async function deleteProduct(id: number, companyId: number) {
+  const product = await prisma.product.findFirst({
+    where: {
+      id,
+      companyId,
+    },
+  });
+  if (!product) {
+    return null;
+  }
+
+  await prisma.product.deleteMany({
+    where: {
+      id,
+      companyId,
+    },
+  });
   return product;
 }

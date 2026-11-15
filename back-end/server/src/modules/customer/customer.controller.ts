@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../../middleware/auth.middleware.js";
 
-import { createCustomerSchema, updateCustomerSchema } from "./customer.schema";
+import {
+  createCustomerSchema,
+  updateCustomerSchema,
+} from "./customer.schema.js";
 import {
   createCustomer,
   getCustomers,
@@ -10,14 +14,16 @@ import {
 } from "./customer.service.js";
 
 export async function createCustomerController(req: Request, res: Response) {
+  const authenticatedReq = req as AuthenticatedRequest;
   const data = createCustomerSchema.parse(req.body);
 
-  const customer = await createCustomer(data);
+  const customer = await createCustomer(authenticatedReq.companyId, data);
 
   return res.status(201).json(customer);
 }
 
 export async function getCustomersController(req: Request, res: Response) {
+  const authenticatedReq = req as AuthenticatedRequest;
   const { search, sortBy, order, page, limit } = req.query;
 
   if (
@@ -63,6 +69,7 @@ export async function getCustomersController(req: Request, res: Response) {
   }
 
   const result = await getCustomers(
+    authenticatedReq.companyId,
     search,
     sortBy as "name" | "createdAt" | undefined,
     order as "asc" | "desc" | undefined,
@@ -72,10 +79,12 @@ export async function getCustomersController(req: Request, res: Response) {
 
   return res.status(200).json(result);
 }
+
 export async function getCustomerByIdController(req: Request, res: Response) {
+  const authenticatedReq = req as AuthenticatedRequest;
   const id = Number(req.params.id);
 
-  const customer = await getCustomerById(id);
+  const customer = await getCustomerById(id, authenticatedReq.companyId);
 
   if (!customer) {
     return res.status(404).json({
@@ -87,22 +96,32 @@ export async function getCustomerByIdController(req: Request, res: Response) {
 }
 
 export async function updateCustomerController(req: Request, res: Response) {
+  const authenticatedReq = req as AuthenticatedRequest;
   const id = Number(req.params.id);
   const data = updateCustomerSchema.parse(req.body);
 
-  const customer = await updateCustomer(id, data);
-
-  return res.status(200).json(customer);
-}
-
-export async function deleteCustomerController(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const customer = await deleteCustomer(id);
+  const customer = await updateCustomer(id, authenticatedReq.companyId, data);
 
   if (!customer) {
     return res.status(404).json({
       message: "Cliente não encontrado",
     });
   }
+
+  return res.status(200).json(customer);
+}
+
+export async function deleteCustomerController(req: Request, res: Response) {
+  const authenticatedReq = req as AuthenticatedRequest;
+  const id = Number(req.params.id);
+
+  const customer = await deleteCustomer(id, authenticatedReq.companyId);
+
+  if (!customer) {
+    return res.status(404).json({
+      message: "Cliente não encontrado",
+    });
+  }
+
   return res.status(204).send();
 }

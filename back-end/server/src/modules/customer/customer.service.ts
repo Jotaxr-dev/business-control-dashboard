@@ -9,43 +9,49 @@ interface CreateCustomerData {
 type CustomerSortBy = "name" | "createdAt";
 type SortOrder = "asc" | "desc";
 
-export async function createCustomer(data: CreateCustomerData) {
-  const customer = await prisma.customer.create({
+export async function createCustomer(
+  companyId: number,
+  data: CreateCustomerData,
+) {
+  return prisma.customer.create({
     data: {
+      companyId,
       name: data.name,
       email: data.email,
       phone: data.phone,
     },
   });
-
-  return customer;
 }
 
 export async function getCustomers(
+  companyId: number,
   search?: string,
   sortBy: CustomerSortBy = "createdAt",
   order: SortOrder = "desc",
   page = 1,
   limit = 10,
 ) {
-  const where = search
-    ? {
-        OR: [
-          {
-            name: {
-              contains: search,
-              mode: "insensitive" as const,
+  const where = {
+    companyId,
+    ...(search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive" as const,
+              },
             },
-          },
-          {
-            email: {
-              contains: search,
-              mode: "insensitive" as const,
+            {
+              email: {
+                contains: search,
+                mode: "insensitive" as const,
+              },
             },
-          },
-        ],
-      }
-    : undefined;
+          ],
+        }
+      : {}),
+  };
 
   const [customers, total] = await Promise.all([
     prisma.customer.findMany({
@@ -70,44 +76,59 @@ export async function getCustomers(
   };
 }
 
-export async function getCustomerById(id: number) {
-  const customer = await prisma.customer.findUnique({
+export async function getCustomerById(id: number, companyId: number) {
+  return prisma.customer.findFirst({
     where: {
       id,
+      companyId,
     },
   });
-
-  return customer;
 }
 
 export async function updateCustomer(
   id: number,
+  companyId: number,
   data: {
     name?: string;
     email?: string;
     phone?: string;
   },
 ) {
-  const customer = await prisma.customer.update({
-    where: { id },
+  const result = await prisma.customer.updateMany({
+    where: {
+      id,
+      companyId,
+    },
     data,
   });
 
-  return customer;
-}
-
-export async function deleteCustomer(id: number) {
-  const customer = await prisma.customer.findUnique({
-    where: { id },
-  });
-
-  if (!customer) {
+  if (result.count === 0) {
     return null;
   }
 
-  await prisma.customer.delete({
-    where: { id },
+  return prisma.customer.findFirst({
+    where: {
+      id,
+      companyId,
+    },
   });
+}
 
+export async function deleteCustomer(id: number, companyId: number) {
+  const customer = await prisma.customer.findFirst({
+    where: {
+      id,
+      companyId,
+    },
+  });
+  if (!customer) {
+    return null;
+  }
+  await prisma.customer.deleteMany({
+    where: {
+      id,
+      companyId,
+    },
+  });
   return customer;
 }
