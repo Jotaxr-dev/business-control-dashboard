@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../errors/AppError.js";
 
-type UserRole = "OWNER" | "ADMIN" | "MEMBER";
+export type UserRole = "OWNER" | "ADMIN" | "MEMBER";
 
 export interface AuthenticatedRequest extends Request {
   userId: number;
